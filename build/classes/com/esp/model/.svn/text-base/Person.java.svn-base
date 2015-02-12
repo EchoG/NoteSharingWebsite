@@ -1,0 +1,161 @@
+/**
+ * 
+ */
+package com.esp.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Model Object: Person
+ * 
+ * @author Echo
+ *
+ */
+public class Person {
+	
+	private String person_id 		= "p1";
+	private String password 		= "123";
+	private String email 			= "p1@hp.com";
+	private String nickname 		= "P1";
+	private String gender 			= "";
+	private List<Person> buddies 	= new ArrayList<Person>();
+	private String department       = "";
+	private String telephone        = "";
+	private String hobby            = "";
+	private String talent           = "";
+	private String moodmsg          = "";
+
+	
+	/**************************************************************************
+	 * business g/setter
+	 * ************************************************************************
+	 */
+	public String getHobby1() {
+		return getHobbys()[0];
+	}
+	
+	public String getHobby2() {
+		return getHobbys()[1];
+	}
+	
+	public String getHobby3() {
+		return getHobbys()[2];
+	}
+	
+	private String[] getHobbys() {
+		String[] ret = {"", "", ""};
+		String[] ps = this.hobby.split("\\|\\|");
+		if (ps.length >= 1) ret[0] = ps[0];
+		if (ps.length >= 2) ret[1] = ps[1];
+		if (ps.length >= 3) ret[2] = ps[2];
+		return ret;
+	}
+	
+	public void setHobbys(String hobby1, String hobby2, String hobby3) {
+		this.hobby = hobby1 + "||" + hobby2 + "||" + hobby3;
+	}
+	
+	public String getTalent1() {
+		return getTalents()[0];
+	}
+	
+	public String getTalent2() {
+		return getTalents()[1];
+	}
+	
+	public String getTalent3() {
+		return getTalents()[2];
+	}
+	
+	private String[] getTalents() {
+		String[] ret = {"", "", ""};
+		String[] ps = this.talent.split("\\|\\|");
+		if (ps.length >= 1) ret[0] = ps[0];
+		if (ps.length >= 2) ret[1] = ps[1];
+		if (ps.length >= 3) ret[2] = ps[2];
+		return ret;
+	}
+	
+	public void setTalents(String talent1, String talent2, String talent3) {
+		this.talent = talent1 + "||" + talent2 + "||" + talent3;
+	}
+	
+
+	/**************************************************************************
+	 * properties g/setter
+	 * ************************************************************************
+	 */
+	public String getPerson_id() {
+		return person_id;
+	}
+	public void setPerson_id(String person_id) {
+		this.person_id = person_id;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getNickname() {
+		return nickname;
+	}
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public List<Person> getBuddies() {
+		return buddies;
+	}
+	public void setBuddies(List<Person> buddies) {
+		this.buddies = buddies;
+	}
+	public void addBuddy(Person person){
+		buddies.add(person);
+	}
+	
+	public String getTelephone() {
+		return telephone;
+	}
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
+	public String getHobby() {
+		return hobby;
+	}
+	public void setHobby(String hobby) {
+		this.hobby = hobby;
+	}
+	public String getTalent() {
+		return talent;
+	}
+	public void setTalent(String talent) {
+		this.talent = talent;
+	}
+	public String getMoodmsg() {
+		return moodmsg;
+	}
+	public void setMoodmsg(String moodmsg) {
+		this.moodmsg = moodmsg;
+	}
+	public String getDepartment() {
+		return department;
+	}
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+	
+
+}

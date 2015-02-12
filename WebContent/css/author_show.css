@@ -1,0 +1,51 @@
+@CHARSET "UTF-8";
+
+
+/******************************
+ *        Author List         *
+ ******************************/
+.authorlist { margin-left: -20px; }
+
+.authorlist .authoritem {
+	width: 348px; margin-left: 20px; margin-bottom: 30px;
+	display: inline-block; padding: 20px;
+	background: #FFF;
+	-webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+
+/********Author Head***********/
+.authorlist .userpic { width: 50px; float: left; }
+.authorlist .userpic img {
+	width: 100%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	border-radius: 50%;
+}
+
+/********Author Info***********/
+.authorlist .userinfo {	margin: 0 10px 10px 65px; }
+
+.userinfo .username { padding-bottom: 10px;	border-bottom: 1px solid #d9d9d9; }
+.userinfo .username a { font-size: 20px; color: #666; }
+.userinfo .username a:hover { text-decoration: none; color: #4d8775; }
+
+.userinfo .newnote { margin: 15px 0 5px; font-size: 14px; color: #666; font-weight: bold; }
+
+.userinfo .newnotelist { margin-left: 10px;}
+.newnotelist .newnoteitme {	padding-top: 5px; border-bottom: 1px dotted #d9d9d9; font-size: 14px; }
+.newnoteitme a { color: #666; }
+.newnoteitme a:hover { text-decoration: none; color: #4d8775; }
+.newnoteitme span { float: right; color: #9B9B9B; }
+
+
+
+
+
+
+

@@ -1,0 +1,436 @@
+/**
+ * 
+ */
+package com.esp.model;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.simple.ParameterizedBeanPropertyRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.stereotype.Service;
+
+/**
+ * @author Echo
+ * 
+ */
+@Service
+@ManagedResource("esp:type=ESP")
+public class ESP {
+
+	private SimpleJdbcTemplate simpleJdbcTemplate;
+
+	@Autowired
+	public void init(DataSource dataSource) {
+		this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
+	}
+
+	/**************************************************************************
+	 * update actions
+	 * ************************************************************************
+	 */
+	/**
+	 * @param person_id
+	 *            ,password,email,nickname,gender
+	 * @return
+	 */
+	public int register(String person_id, String password, String email,
+			String nickname, String gender) {
+		Person per = new Person();
+		per.setPerson_id(person_id);
+		per.setPassword(password);
+		per.setEmail(email);
+		per.setNickname(nickname);
+		per.setGender(gender);
+
+		Date conn_datetimeNow = new Date();
+		this.simpleJdbcTemplate
+				.update("INSERT INTO Person (person_id, password, email, nickname, gender, department, telephone, hobby, talent, moodmsg ) values( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )",
+						new Object[] { per.getPerson_id(), per.getPassword(),
+								per.getEmail(), per.getNickname(),
+								per.getGender(), "", "", "", "", "" });
+		int addPer = this.simpleJdbcTemplate
+				.update("INSERT INTO ActiveDevice (device_sn, conn_datetime, latitude, longtitude, loged_in, person_id, hiden ) values( ?, ? ,? ,? ,? ,? ,? )",
+						new Object[] { 0, conn_datetimeNow, 100.0, 20.0, 1,
+								per.getPerson_id(), 1 });
+		return addPer;
+	}
+
+	public Boolean updateGPS(String personId, Integer deviceSN, Double latitude,
+			Double longtitude) {
+		//
+		Map<String, String> args = new HashMap<String, String>();
+		List cntList = this.simpleJdbcTemplate.queryForList(
+				"select 1 from ActiveDevice "
+						+ "where person_id = ? and device_sn = ? ",
+				new Object[] { personId, deviceSN });
+
+		// update or insert
+		if (cntList.size() > 0) {
+			this.simpleJdbcTemplate.update("update ActiveDevice d"
+					+ "set conn_datetime = ?, latitude = ?, longtitude = ?"
+					+ "where person_id = ? and device_sn = ?", new Object[] {
+					new Date(), latitude, longtitude, personId, deviceSN });
+		} else {
+			this.simpleJdbcTemplate
+					.update("INSERT into ActiveDevice "
+							+ "(device_sn, conn_datetime, latitude, longtitude, loged_in, person_id, hiden) "
+							+ "values ( ?, ?, ?, ?, ?, ?, ?)", new Object[] {
+							deviceSN, new Date(), latitude, longtitude, 1, personId, 0 });
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return
+	 */
+	public int updatePerson(Person person) {
+		int ret = this.simpleJdbcTemplate
+				.update("UPDATE person SET department = ?,telephone = ?,hobby = ?,talent = ?,moodmsg = ? WHERE person_id = ? ",
+						new Object[] { person.getDepartment(),
+								person.getTelephone(), person.getHobby(),
+								person.getTalent(), person.getMoodmsg(),
+								person.getPerson_id() });
+		return ret;
+	}
+	
+	public Boolean checkBuddyReq(String person_id, String buddy_id) {
+		@SuppressWarnings("deprecation")
+		List<BuddyRequest> reqs = this.simpleJdbcTemplate
+				.query("SELECT person_id, requester_id, reason, confirm "
+						+ " FROM BuddyRequest "
+						+ " WHERE person_id = ? and requester_id = ? and confirm = 0",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(BuddyRequest.class), 
+						new Object[] { person_id, buddy_id });
+
+		if (reqs.size() > 0)
+			return true;
+		else
+			return false;
+	}
+	/**
+	 * @param person_id
+	 *            ,password,email,nickname,gender
+	 * @return
+	 */
+	public int addBuddyReq(String per_id, String buddy_id, String reason) {
+//		Date datetimeNow = new Date();
+		return this.simpleJdbcTemplate
+				.update("INSERT into BuddyRequest (person_id, requester_id, reason, confirm) values (?, ?, ?, ?)",
+						new Object[] { per_id, buddy_id, reason, 0});
+	}
+	
+	/**
+	 * @return
+	 */
+	public int accecptBuddyRequests(Integer req_id) {
+		BuddyRequest req = this.simpleJdbcTemplate.queryForObject(
+				"SELECT id, person_id, requester_id, reason, send_datetime, confirm"
+						+ " FROM BuddyRequest WHERE id = ? ",
+						ParameterizedBeanPropertyRowMapper
+						.newInstance(BuddyRequest.class), new Object[] { req_id });
+		
+		if (!isBuddy(req.getPerson_id(), req.getRequester_id())) {
+			this.simpleJdbcTemplate.update(
+					"INSERT INTO Buddy (person_id, buddy_id) values( ?, ? )",
+					new Object[] { req.getPerson_id(), req.getRequester_id() });
+		}
+		if (!isBuddy( req.getRequester_id(), req.getPerson_id())) {
+			this.simpleJdbcTemplate.update(
+					"INSERT INTO Buddy (person_id, buddy_id) values( ?, ? )",
+					new Object[] { req.getRequester_id(), req.getPerson_id() });
+		}
+	
+		this.simpleJdbcTemplate.update(
+				"UPDATE BuddyRequest SET confirm = ? WHERE id = ? ",
+				new Object[] { 1, req_id });
+		return 1;
+	}
+
+	/**
+	 * @return
+	 */
+	public int declineBuddyRequests(Integer req_id) {
+		return this.simpleJdbcTemplate.update(
+				"UPDATE BuddyRequest SET confirm = ? WHERE id = ? ",
+				new Object[] { -1, req_id });
+	}
+	
+	/**************************************************************************
+	 * query actions
+	 * ************************************************************************
+	 */
+	public Boolean isBuddy(String per1_id, String per2_id) {
+		@SuppressWarnings("deprecation")
+		List<BuddyRequest> reqs = this.simpleJdbcTemplate
+				.query("SELECT person_id, buddy_id"
+						+ " FROM Buddy "
+						+ " WHERE person_id = ? and buddy_id = ?",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(BuddyRequest.class), 
+						new Object[] { per1_id, per2_id });
+
+		if (reqs.size() > 0)
+			return true;
+		else
+			return false;
+	}
+	
+	public List<Person> getAllPersons() {
+
+		List<Person> ret = new ArrayList<Person>();
+		// Retrieve the list of all vets.
+		ret.clear();
+		List pers = this.simpleJdbcTemplate
+				.query("SELECT person_id, password, email, nickname, gender ,department,telephone,hobby,talent,moodmsg "
+						+ "FROM person " + "ORDER BY person_id, password",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(Person.class));
+		ret.addAll(pers);
+
+		return ret;
+	}
+
+	public Boolean checkPerson(Person per) {
+		List pers = this.simpleJdbcTemplate
+				.query("SELECT person_id, password, email, nickname, gender ,department,telephone,hobby,talent,moodmsg "
+						+ " FROM person "
+						+ " WHERE person_id = ?"
+						+ " AND password = ?" + " ORDER BY person_id, password",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(Person.class),
+						new Object[] { per.getPerson_id(), per.getPassword() });
+
+		if (pers.size() > 0)
+			return true;
+		else
+			return false;
+	}
+
+	public Boolean checkPersonById(String person_id) {
+		List pers = this.simpleJdbcTemplate
+				.query("SELECT person_id, password, email, nickname, gender ,department,telephone,hobby,talent,moodmsg "
+						+ " FROM person "
+						+ " WHERE person_id = ? "
+						+ " ORDER BY person_id, password",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(Person.class), 
+						new Object[] { person_id });
+
+		if (pers.size() > 0)
+			return true;
+		else
+			return false;
+	}
+
+	/**
+	 * @param person_id
+	 * @return
+	 */
+	public Person getPerson(String person_id) {
+		List<Person> pers = this.simpleJdbcTemplate
+				.query("SELECT person_id, password, email, nickname, gender ,department,telephone,hobby,talent,moodmsg "
+						+ " FROM person "
+						+ " WHERE person_id = ? "
+						+ " ORDER BY person_id, password",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(Person.class),
+						new Object[] { person_id });
+
+		if (pers.size() > 0)
+			return pers.get(0);
+		else
+			return null;
+	}
+
+	public ActiveDevice getMyDevice(Person me) {
+		// Retrieve the list of all device.
+		List<ActiveDevice> devices = this.simpleJdbcTemplate
+				.query("SELECT id, device_sn, conn_datetime, latitude, longtitude,loged_in,person_id,hiden "
+						+ "FROM activedevice p WHERE p.loged_in = '1' "
+						+ "AND p.person_id = ? " + "ORDER BY id, device_sn",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(ActiveDevice.class),
+						new Object[] { me.getPerson_id() });
+		return devices.size() > 0 ? devices.get(0) : null;
+	}
+
+	/**
+	 * @param person_id
+	 * @return
+	 */
+	public List<BuddyRequest> getPendingBuddyRequests(String person_id) {
+		List<BuddyRequest> ret = this.simpleJdbcTemplate.query(
+				"SELECT id, person_id, requester_id, reason, send_datetime, confirm "
+						+ " FROM BuddyRequest " + " WHERE person_id = ? "
+						+ " AND confirm = 0"
+						+ " ORDER BY person_id, requester_id",
+				ParameterizedBeanPropertyRowMapper
+						.newInstance(BuddyRequest.class),
+				new Object[] { person_id });
+
+		return ret;
+	}
+
+	/**
+	 * @param person_id
+	 * @return
+	 */
+	public List<BuddyRequest> getHistoryBuddyRequests(String person_id) {
+		List<BuddyRequest> ret = this.simpleJdbcTemplate.query(
+				"SELECT person_id, requester_id, reason, confirm "
+						+ " FROM BuddyRequest " + " WHERE person_id = ? "
+						+ " AND confirm <> 0"
+						+ " ORDER BY person_id, requester_id",
+				ParameterizedBeanPropertyRowMapper
+						.newInstance(BuddyRequest.class),
+				new Object[] { person_id });
+
+		return ret;
+	}
+
+
+	/**
+	 * @param nickname
+	 * @return
+	 */
+	public Person getPersonByNickname(String nickname) {
+		List<Person> allPeople = getAllPersons();
+		for (int i = 0; i < allPeople.size(); i++) {
+			if (allPeople.get(i).getNickname() == nickname) {
+				return allPeople.get(i);
+			}
+		}
+		return null;
+	}
+	
+
+	public List<PeopleAround> findPeopleAround() {
+		List<PeopleAround> ret = this.simpleJdbcTemplate.query(
+				"SELECT d.person_id, p.nickname, d.conn_datetime, d.latitude, d.longtitude "
+				+ "FROM ActiveDevice d left join Person p on d.person_id = p.person_id "
+				+ "where d.loged_in = '1' ",
+				ParameterizedBeanPropertyRowMapper.newInstance(PeopleAround.class));
+		
+		Collections.sort(ret);
+		return ret;
+	}
+	
+	
+	/**
+	 * @return
+	 */
+	public List<ActiveDevice> getAllActiveDevices() {
+		List<ActiveDevice> device = new ArrayList<ActiveDevice>();
+
+		// Retrieve the list of all device.
+		device.clear();
+		List pers1 = this.simpleJdbcTemplate
+				.query("SELECT id, device_sn, conn_datetime, latitude, longtitude,loged_in,person_id,hiden "
+						+ "FROM activedevice p WHERE p.loged_in = '1' "
+						+ "ORDER BY id, device_sn",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(ActiveDevice.class));
+
+		device.addAll(pers1);
+
+		return device;
+	}
+
+	public List<Person> getPeopleOnline() {
+		List<Person> peopleOnline = new ArrayList<Person>();
+
+		// Retrieve the list of all buddy.
+		peopleOnline.clear();
+		List persOnline = this.simpleJdbcTemplate
+				.query("SELECT p.person_id, p.password, p.email, p.nickname, p.gender,p.department,p.telephone,p.hobby,p.talent,p.moodmsg "
+						+ "FROM person p WHERE p.person_id "
+						+ "in (SELECT b.person_id FROM activedevice b "
+						+ "WHERE b.loged_in = '1') " + "ORDER BY p.person_id",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(Person.class));
+
+		peopleOnline.addAll(persOnline);
+
+		return peopleOnline;
+	}
+
+	public List<Person> getBuddies(Person per) {
+		List<Person> buddy = new ArrayList<Person>();
+
+		// Retrieve the list of all buddy.
+		buddy.clear();
+		List<Person> pers2 = this.simpleJdbcTemplate
+				.query("SELECT p.person_id, p.password, p.email, p.nickname, p.gender,P.department,P.telephone,P.hobby,P.talent,P.moodmsg  "
+						+ "FROM person p WHERE p.person_id "
+						+ "in (SELECT b.buddy_id FROM buddy b "
+						+ "WHERE b.person_id = ? )" + "ORDER BY p.person_id",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(Person.class), new Object[] { per
+								.getPerson_id() });
+
+		buddy.addAll(pers2);
+
+		return buddy;
+	}
+
+	public List<Person> getBlackList(Person per) {
+		List<Person> buddy = new ArrayList<Person>();
+
+		// Retrieve the list of all buddy.
+		buddy.clear();
+		List pers2 = this.simpleJdbcTemplate
+				.query("SELECT p.person_id, p.password, p.email, p.nickname, P.gender ,P.department,P.telephone,P.hobby,P.talent,P.moodmsg "
+						+ "FROM person p WHERE p.person_id "
+						+ "in (SELECT b.black_person_id FROM BlackList b "
+						+ "WHERE b.person_id = ? ) " + "ORDER BY p.person_id",
+						ParameterizedBeanPropertyRowMapper
+								.newInstance(Person.class), new Object[] { per
+								.getPerson_id() });
+
+		buddy.addAll(pers2);
+
+		return buddy;
+	}
+
+	/**************************************************************************
+	 * count actions
+	 * ************************************************************************
+	 */
+	public Integer countBuddies(Person per) {
+		return getBuddies(per).size();
+	}
+
+	public Integer countPeopleOnline() {
+		return getPeopleOnline().size();
+	}
+
+	public Integer countAllPerson() {
+		return this.getAllPersons().size();
+	}
+
+	public Integer countPendingReq(Person per) {
+		return this.getPendingBuddyRequests(per.getPerson_id()).size();
+	}
+
+	// public Integer count
+
+	/**************************************************************************
+	 * getter setter
+	 * ************************************************************************
+	 */
+	public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+		this.simpleJdbcTemplate = simpleJdbcTemplate;
+	}
+
+}

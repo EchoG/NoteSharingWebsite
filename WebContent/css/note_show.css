@@ -1,0 +1,29 @@
+@CHARSET "UTF-8";
+
+
+/******************************
+ *          Sider Nav         *
+ ******************************/
+.noteshow .tagsider {
+	width: 100px; padding-left: 50px; 
+	float: right; text-align: right;
+}
+.tagsider li a {display: inline-block;
+	font-size: 14px; 
+	margin-bottom: 20px; padding: 10px 20px;
+	background: #FFF;
+	-webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.tagsider li a:hover { color: #000; text-decoration: none; }
+.tagsider li.current a{
+	color: #FFF;  background-color: #a1ceb3;
+	-webkit-box-shadow: inset 3px 3px 8px rgba(0,0,0,0.125);
+	-moz-box-shadow: inset 3px 3px 8px rgba(0,0,0,0.125);
+	box-shadow: inset 3px 3px 8px rgba(0,0,0,0.125);
+}

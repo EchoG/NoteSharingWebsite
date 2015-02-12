@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/42/trunk/ESP_Server/src/main/java/com/esp/model
+END
+BuddyRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/18/trunk/ESP_Server/src/main/java/com/esp/model/BuddyRequest.java
+END
+Person.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/35/trunk/ESP_Server/src/main/java/com/esp/model/Person.java
+END
+ESP.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/42/trunk/ESP_Server/src/main/java/com/esp/model/ESP.java
+END
+Buddy.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/16/trunk/ESP_Server/src/main/java/com/esp/model/Buddy.java
+END
+BlackList.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/16/trunk/ESP_Server/src/main/java/com/esp/model/BlackList.java
+END
+ActiveDevice.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/28/trunk/ESP_Server/src/main/java/com/esp/model/ActiveDevice.java
+END
+PeopleAround.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/38/trunk/ESP_Server/src/main/java/com/esp/model/PeopleAround.java
+END

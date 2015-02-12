@@ -1,0 +1,118 @@
+/**
+ * 
+ */
+package com.esp.model;
+
+import java.util.Date;
+
+/**
+ * @author Echo
+ * 
+ */
+public class PeopleAround implements Comparable<PeopleAround> {
+
+	private String person_id = "";
+	private String nickName = "";
+	private Date conn_datetime = new Date();
+
+	private Double latitude = null;
+	private Double longtitude = null;
+
+	private Double distance = 0D;
+	private String direction = "no information";
+
+	/**************************************************************************
+	 * refresh action
+	 * ************************************************************************
+	 */
+	public void refreshInfomation(ActiveDevice anotherDev) {
+		// refresh distance
+		double latDistance = latitude - anotherDev.getLatitude();
+		double lonDistance = longtitude - anotherDev.getLongtitude();
+		this.distance = Math.floor(Math.hypot(latDistance, lonDistance));
+
+		// refresh direction
+		if (lonDistance >= 0 && latDistance >= 0) {
+			this.direction = "NorthWest";
+		} else if (lonDistance >= 0 && latDistance < 0) {
+			this.direction = "SouthWest";
+		} else if (lonDistance < 0 && latDistance < 0) {
+			this.direction = "SouthEast";
+		} else if (lonDistance < 0 && latDistance >= 0) {
+			this.direction = "NorthEast";
+		} else {
+			this.direction = "no information";
+		}
+	}
+
+	@Override
+	public int compareTo(PeopleAround arg0) {
+		if (distance > arg0.distance) {
+			return -1;
+		} else {
+			return 1;
+		}
+	}
+
+	/**************************************************************************
+	 * getter/setter
+	 * ************************************************************************
+	 */
+
+	public String getPerson_id() {
+		return person_id;
+	}
+
+	public void setPerson_id(String person_id) {
+		this.person_id = person_id;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public Date getConn_datetime() {
+		return conn_datetime;
+	}
+
+	public void setConn_datetime(Date conn_datetime) {
+		this.conn_datetime = conn_datetime;
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public Double getLongtitude() {
+		return longtitude;
+	}
+
+	public void setLongtitude(Double longtitude) {
+		this.longtitude = longtitude;
+	}
+
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
+	}
+
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+
+}

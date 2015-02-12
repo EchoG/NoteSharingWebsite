@@ -1,0 +1,39 @@
+
+/*the main body*/
+.regbody {
+	padding: 40px 20px;
+	background: #FFF;
+	-webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.regbody .regfrm { width: 520px; padding: 20px 30px; border-right: 1px solid #CCC; float: left; }
+.regfrm .frmitem { height: 70px; font-size: 14px; }
+.regfrm .frmitem .frmtit { display: inline-block; width: 90px; color: #666; text-align: right; }
+.regfrm .frmitem .frmtit span { color: #F00; vertical-align: middle; }
+.regfrm .frmitem .frmcont{
+	display: inline-block; width: 230px; height: 20px; line-height: 20px; padding: 10px;
+	background-image:url(../images/register/input_bg.png); background-repeat: no-repeat; background-position: 0 -42px;
+	font-size: 16px; color: #999; border: none; outline: 0;
+}
+.regfrm .frmitem .frmcont:focus { background-position: 0 0; color:#000; }
+.regfrm .frmitem .frmtip { display: inline-block; width: 150px; font-size: 12px; color: #999; padding-left: 5px; vertical-align: middle; }
+.regfrm .frmitem .regbtn {
+	display: inline-block; width: 182px; height: 49px; margin-left: 85px; text-indent: -999em;
+	background-image: url(../images/register/reg_btn.png); background-repeat: no-repeat;
+}
+.regfrm .frmitem .regbtn:hover { background-position: 0 -60px; }
+.regfrm .frmitem .regbtn:active { background-position: 0 -120px; }
+.regfrm .frmitem .gender{ display: inline-block; width: 250px; height: 26px; padding-top: 10px; }
+.regfrm .frmitem .gender label { margin-right: 10px; color: #666; }
+.regfrm .frmitem .gender label input { vertical-align: -1px; }
+
+.regbody .regr { float: left; }
+.regr .r_title { padding-top: 30px; padding-left: 40px; }
+.regr .r_title span { font-size: 12px; color: #999; }
+
+

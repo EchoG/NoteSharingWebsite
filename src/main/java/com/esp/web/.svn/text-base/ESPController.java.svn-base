@@ -1,0 +1,402 @@
+package com.esp.web;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.esp.model.ActiveDevice;
+import com.esp.model.BuddyRequest;
+import com.esp.model.ESP;
+import com.esp.model.PeopleAround;
+import com.esp.model.Person;
+
+/**
+ * Annotation-driven <em>MultiActionController</em> that handles all non-form
+ * URL's.
+ * 
+ * @author Juergen Hoeller
+ * @author Mark Fisher
+ * @author Ken Krebs
+ * @author Arjen Poutsma
+ */
+@Controller
+public class ESPController {
+
+	private final ESP esp;
+
+	private static final String SESSION_USER = "user";
+
+	/**************************************************************************
+	 * business actions
+	 * ************************************************************************
+	 */
+	/**
+	 * 
+	 * @return a ModelMap with the model attributes for the view
+	 */
+	@RequestMapping("/findPeopleAround")
+	public ModelMap findPeopleAround(HttpSession session) {
+		List<PeopleAround> paList = new ArrayList<PeopleAround>();
+		paList.addAll(this.esp.findPeopleAround());
+		Person me = (Person) session.getAttribute(SESSION_USER);
+		
+		ModelMap ret = new ModelMap("paList", paList);
+		
+		if (me != null) {
+			// remove myself
+			for(int i=0; i<paList.size(); i++){
+				if(paList.get(i).getPerson_id() == me.getPerson_id()){
+					paList.remove(paList.get(i));
+				}
+			}
+			
+			// refresh distance information
+			ActiveDevice myDevice = esp.getMyDevice(me);
+			for (PeopleAround pa: paList) {
+				pa.refreshInfomation(myDevice);
+			}
+		}
+		
+		return ret; 
+	}
+	
+	@RequestMapping("/displayPerson")
+	public ModelMap displayPerson(String id) {
+		Person per = esp.getPerson(id);
+		ModelMap ret = new ModelMap();
+		ret.addObject("per", per);
+		
+		return ret;
+	}
+	
+	@RequestMapping("/displayBuddy")
+	public ModelMap displayBuddy(String id) {
+		Person per = esp.getPerson(id);
+		ModelMap ret = new ModelMap();
+		ret.addObject("per", per);
+		
+		return ret;
+	}
+	
+	/**
+	 * 
+	 * @return a ModelMap with the model attributes for the view
+	 */
+	@RequestMapping("/addBuddyReq")
+	public ModelAndView addBuddyReq(String per_id, String reason, HttpSession session) {
+		Person me = (Person) session.getAttribute(SESSION_USER);
+		if (me != null) {
+			// check
+			if (esp.checkBuddyReq(per_id, me.getPerson_id())) {
+				ModelAndView ret = new ModelAndView("forward:/displayPerson?id="+per_id);
+				ret.addObject("msg", "You have sent the request!");
+				return ret; 
+			}
+			// insert req
+			if (esp.addBuddyReq(per_id, me.getPerson_id(), reason) > 0) {
+				ModelAndView ret = new ModelAndView("forward:/findPeopleAround");
+				ret.addObject("msg", "Successfully send the buddy request");
+				return ret; 
+			} else {
+				ModelAndView ret = new ModelAndView("forward:/displayPerson?id="+per_id);
+				ret.addObject("msg", "Cannot send the request!");
+				return ret; 
+			}
+		} else {
+			ModelAndView ret = new ModelAndView("forward:/displayPerson?id="+per_id);
+			ret.addObject("msg", "Please login first!");
+			return ret; 
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @return a ModelMap with the model attributes for the view
+	 */
+	@RequestMapping("/activeDevice")
+	public ModelMap activeDeviceHandler(HttpSession session) {
+		List<ActiveDevice> cerDeviceList = new ArrayList<ActiveDevice>();
+		cerDeviceList.addAll(this.esp.getAllActiveDevices());
+		for(int i=0;i<cerDeviceList.size();i++){
+			Person perUser = (Person) session.getAttribute(SESSION_USER);
+			if(cerDeviceList.get(i).getPerson_id()==perUser.getPerson_id()){
+				cerDeviceList.remove(cerDeviceList.get(i));
+			}
+		}
+		ModelMap ret = new ModelMap("cerDeviceList", cerDeviceList);
+		Person me = (Person) session.getAttribute(SESSION_USER);
+		if (me != null) {
+			ActiveDevice myDevice = esp.getMyDevice(me);
+			for (ActiveDevice dev: cerDeviceList) {
+				dev.refreshInfomation(myDevice);
+			}
+		}
+		
+		return ret; 
+	}
+
+	/**
+	 * 
+	 * @return a ModelMap with the model attributes for the view
+	 */
+	@RequestMapping("/persons")
+	public ModelMap personsHandler() {
+		List<Person> perList = new ArrayList<Person>();
+		perList.addAll(this.esp.getAllPersons());
+		return new ModelMap("perList", perList);
+	}
+
+	/**
+//	 * 
+//	 * @return a ModelMap with the model attributes for the view
+//	 */
+//	@RequestMapping("/personsOnline")
+//	public ModelMap personsOnlineHandler() {
+//		List<Person> perOnlineList = new ArrayList<Person>();
+//		perOnlineList.addAll(this.esp.getPeopleOnline());
+//		perOnlineList.remove(SESSION_USER);
+//		return new ModelMap("perOnlineList", perOnlineList);
+//	}
+
+	/**
+	 * 
+	 * @return a ModelMap with the model attributes for the view
+	 */
+	@RequestMapping("/buddys")
+	public ModelMap buddysHandler(HttpSession session) {
+		Person curUser = (Person) session.getAttribute(SESSION_USER);
+		ModelMap ret = new ModelMap();
+		if (curUser == null) {
+			ret.addObject("msg", "Please login first.");
+			ret.addObject("buddyList", new ArrayList());
+			ret.addObject("blackList", new ArrayList());
+		} else {
+			List<Person> buddyList = new ArrayList<Person>();
+			buddyList.addAll(this.esp.getBuddies(curUser));
+			List<Person> blackList = new ArrayList<Person>();
+			blackList.addAll(this.esp.getBlackList(curUser));
+			// List<ActiveDevice> buddyList = new ArrayList<ActiveDevice>();
+			// buddyList.addAll(this.esp.getCertainActiveDevices(curUser));
+			ret.addObject("buddyList", buddyList);
+			ret.addObject("blackList", blackList);
+		}
+		return ret;
+	}
+
+	/**
+	 * 
+	 * @return a ModelMap with the model attributes for the view
+	 */
+	@RequestMapping("/buddyRequests")
+	public ModelMap buddyRequestsHandler(HttpSession session) {
+		Person curUser = (Person) session.getAttribute(SESSION_USER);
+		ModelMap ret = new ModelMap();
+		if (curUser == null) {
+			ret.addObject("msg", "Please login first.");
+			ret.addObject("pendingBuddyRequestList", new ArrayList());
+		} else {
+			List<BuddyRequest> pendReqList = new ArrayList<BuddyRequest>();
+			pendReqList.addAll(this.esp.getPendingBuddyRequests(curUser
+					.getPerson_id()));
+			List<BuddyRequest> histReqList = new ArrayList<BuddyRequest>();
+			histReqList.addAll(this.esp.getHistoryBuddyRequests(curUser
+					.getPerson_id()));
+			// List<ActiveDevice> buddyList = new ArrayList<ActiveDevice>();
+			// buddyList.addAll(this.esp.getCertainActiveDevices(curUser));
+			ret.addObject("pendingBuddyRequestList", pendReqList);
+			ret.addObject("histBuddyRequestList", histReqList);
+		}
+		return ret;
+	}
+
+	/**
+	 * 
+	 * @return a ModelMap with the model attributes for the view
+	 */
+	@RequestMapping("/accecptBuddyReq")
+	public ModelAndView acceptBuddyReq(Integer req_id) {
+		int update = esp.accecptBuddyRequests(req_id);
+		ModelAndView ret = new ModelAndView("forward:/buddyRequests");
+		ret.addObject("msg", "Successfully Added the buddy!");
+		return ret;
+	}
+
+	/**
+	 * 
+	 * @return a ModelMap with the model attributes for the view
+	 */
+	@RequestMapping("/declineBuddyReq")
+	public ModelAndView declineBuddyReq(Integer req_id) {
+		esp.declineBuddyRequests(req_id);
+		ModelAndView ret = new ModelAndView("forward:/buddyRequests");
+		ret.addObject("msg", "Declined the request!");
+		return ret;
+	}
+
+	/**
+	 * 
+	 * @return a ModelMap with the model attributes for the view
+	 */
+	@RequestMapping(value = "/postGPS", method = RequestMethod.POST)
+	@ResponseBody
+	public String postGPS(String userId, String password, Integer deviceSN,
+			Double latitude, Double longtitude, HttpSession session) {
+		String ret = "fail";
+		Person p = new Person();
+		p.setPerson_id(userId);
+		p.setPassword(password);
+		if (esp.checkPerson(p)) {
+			esp.updateGPS(userId, deviceSN, latitude, longtitude);
+			ret = "success";
+		}
+		return ret;
+	}
+	
+	/**************************************************************************
+	 * system actions
+	 * ************************************************************************
+	 */
+	/**
+	 * Custom handler for the welcome view.
+	 * <p>
+	 * Note that this handler relies on the RequestToViewNameTranslator to
+	 * determine the logical view name based on the request URL: "/welcome.do"
+	 * -&gt; "welcome".
+	 */
+	@RequestMapping("/")
+	public ModelAndView welcomeHandler(HttpSession session) {
+		ModelAndView ret = new ModelAndView("welcome");
+		Person me = (Person) session.getAttribute(SESSION_USER);
+		ret.addObject("all_person_count", esp.countPeopleOnline());
+		ret.addObject("online_person_count", esp.countPeopleOnline());
+		if (me != null) {
+			ret.addObject("me", me);
+			ret.addObject("my_buddies_count", esp.countBuddies(me));
+			ret.addObject("pending_buddy_req_count", esp.countPendingReq(me));
+		} else {
+			ret.addObject("my_buddies_count", 0);
+			ret.addObject("pending_buddy_req_count", 0);
+		}
+		return ret;
+	}
+
+	@RequestMapping("/login")
+	public ModelMap login(HttpSession session) {
+		Person me = (Person) session.getAttribute(SESSION_USER);
+		return new ModelMap(SESSION_USER, me);
+	}
+
+	@RequestMapping("/register")
+	public ModelMap register(HttpSession session) {
+		Person me = (Person) session.getAttribute(SESSION_USER);
+		return new ModelMap(SESSION_USER, me);
+	}
+
+	@RequestMapping("/login_submit")
+	public ModelAndView login_submit(@RequestParam String userName,
+			@RequestParam String password, HttpSession session) {
+		Person p = new Person();
+		p.setPerson_id(userName);
+		p.setPassword(password);
+		if (esp.checkPerson(p)) {
+			p = esp.getPerson(userName);
+			session.setAttribute(SESSION_USER, p);
+			ModelAndView ret = new ModelAndView("redirect:/");
+			return ret;
+		} else {
+			ModelAndView ret = new ModelAndView("forward:/login");
+			ret.addObject("msg", "Login error , please try again.");
+			return ret;
+		}
+	}
+
+	@RequestMapping("/register_submit")
+	public ModelAndView register_submit(@RequestParam String person_id,
+			@RequestParam String password, @RequestParam String email,
+			@RequestParam String nickname, @RequestParam String gender,
+			HttpSession session) {
+		if (esp.checkPersonById(person_id)) {
+			ModelAndView ret = new ModelAndView("forward:/register");
+			ret.addObject("msg", "The name has been used , please change another name.");
+			return ret;
+		}
+
+		if (esp.register(person_id, password, email, nickname, gender) == 1) {
+			Person p = esp.getPerson(person_id);
+			session.setAttribute(SESSION_USER, p);
+			ModelAndView ret = new ModelAndView("redirect:/");
+			ret.addObject("msg", "Welcome to ESP!");
+			return ret;
+		} 
+		else {
+			ModelAndView ret = new ModelAndView("forward:/register");
+			ret.addObject("msg", "Register error , please try again.");
+			return ret;
+		}
+	}
+	
+	@RequestMapping("/updateMyInfo")
+	public ModelMap updateMyInfo(HttpSession session) {
+		Person me = (Person) session.getAttribute(SESSION_USER);
+		return new ModelMap("me", me);
+	}
+	
+	@RequestMapping("/updateMyInfo_submit")
+	public ModelAndView updateMyInfo_submit(@RequestParam String moodmsg, 
+			@RequestParam String hobby1, @RequestParam String hobby2, @RequestParam String hobby3, 
+			@RequestParam String talent1, @RequestParam String talent2, @RequestParam String talent3, 
+			@RequestParam String telephone, @RequestParam String department, HttpSession session) {
+		Person me = (Person) session.getAttribute(SESSION_USER);
+		if (me == null) {
+			ModelAndView ret = new ModelAndView("forward:/login");
+			ret.addObject("msg", "Please login before update personal information.");
+			return ret;
+		}
+		me.setMoodmsg(moodmsg);
+		me.setHobbys(hobby1, hobby2, hobby3);
+		me.setTalents(talent1, talent2, talent3);
+		me.setDepartment(department);
+		me.setTelephone(telephone);
+	
+		int update = esp.updatePerson(me);
+		if(update==1){
+			session.setAttribute(SESSION_USER, me);
+			ModelAndView ret = new ModelAndView("redirect:/");
+			ret.addObject("msg", "Information modify successful!");
+		return ret;
+		}
+		else{
+			ModelAndView ret = new ModelAndView("forward:/updateMyInfo_submit");
+			ret.addObject("msg", "Modify error , please try again.");
+			return ret;
+		}
+	}
+
+	@RequestMapping("/logout")
+	public ModelAndView check(HttpSession session) {
+		session.removeAttribute(SESSION_USER);
+		ModelAndView ret = new ModelAndView("redirect:/");
+		return ret;
+	}
+
+	/**************************************************************************
+	 * getter setter
+	 * ************************************************************************
+	 */
+
+	@Autowired
+	public ESPController(ESP esp) {
+		this.esp = esp;
+	}
+}

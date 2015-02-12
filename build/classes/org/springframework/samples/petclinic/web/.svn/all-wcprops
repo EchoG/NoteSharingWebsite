@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web
+END
+ClinicBindingInitializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/ClinicBindingInitializer.java
+END
+PetTypeEditor.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/PetTypeEditor.java
+END
+EditPetForm.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/EditPetForm.java
+END
+FindOwnersForm.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/FindOwnersForm.java
+END
+EditOwnerForm.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/EditOwnerForm.java
+END
+package-info.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/package-info.java
+END
+AddPetForm.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/AddPetForm.java
+END
+ClinicController.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/ClinicController.java
+END
+AddOwnerForm.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/AddOwnerForm.java
+END
+AddVisitForm.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/AddVisitForm.java
+END
+VisitsAtomView.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/20/trunk/ESP_Server/src/example/java/org/springframework/samples/petclinic/web/VisitsAtomView.java
+END

@@ -1,0 +1,79 @@
+@CHARSET "UTF-8";
+
+/******************************
+ *         User Info          *
+ ******************************/
+.userinfo {	margin: 30px 0;	min-height: 90px; }
+
+.userinfo .userbase { margin-left: 110px; color: #666; }
+.userbase .username { font-size: 30px; }
+.userbase .userother { margin: 5px 0; font-size: 14px; }
+
+.userinfo .userpic {
+	float: left; width: 80px; height: 80px; 
+	border: 5px solid #fff;
+	-webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	border-radius: 50%;
+}
+
+.userinfo .userpic img {
+	width: 100%; height: 100%;
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	border-radius: 50%;
+}
+
+
+/******************************
+ *         Note List          *
+ ******************************/
+.usernoteshow .notelist { width: 600px; float: left; }
+.usernoteshow .notelist .usernote { margin-left: 0; }
+.usernoteshow .notelist .userpic, .arrow_left { display: none; } 
+
+/******************************
+ *          Note Nav          *
+ ******************************/
+.usernoteshow .notenav { float: right; width: 150px; margin-left: 50px; }
+
+.notenav a:hover { text-decoration: none; }
+.notenav li {
+	font-size: 16px; margin-bottom: 5px;
+	border-left: 5px solid #dfdfdf;
+}
+.notenav li:hover {	border-color: #abb7b0; }
+.notenav li .nnitem { display: inline-block; padding: 10px; color: #889e94; }
+
+.notenav li.current { border-left: 6px solid #2f6c59; }
+.notenav li.current .nnitem { font-weight: bold; color: #2f6c59; }
+/*.notenav li.current .notebook li span { color: #2f6c59; }*/
+
+/*.notenav .notebook { }
+.notenav .notebook li {	font-size: 14px; margin: 0;	border: none; }
+.notenav .notebook li span {
+	float: left; font-weight: bold; color: #dfdfdf;
+}
+.notenav .notebook li .nbitem {
+	margin-left: 30px;
+	display: block; line-height: 20px;
+	padding-bottom: 10px; color: #889e94;
+}
+.notenav .notebook li.current .nbitem {	font-weight: bold; color: #2f6c59; }*/
+
+
+
+
+
+.notenav .notebook { margin-left: 30px; }
+.notenav .notebook li {	margin-bottom: 10px; font-size: 14px; border: none; }
+/*.notenav .notebook li span {
+	float: left; font-weight: bold; color: #dfdfdf;
+}*/
+.notenav .notebook li .nbitem {	line-height: 20px; color: #889e94;  }
+.notenav .notebook li.current .nbitem {	font-weight: bold; color: #2f6c59; }
+

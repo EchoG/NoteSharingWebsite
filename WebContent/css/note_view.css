@@ -1,0 +1,74 @@
+@CHARSET "UTF-8";
+
+
+/******************************
+ *          Note Body         *
+ ******************************/
+.notebody { padding-top: 10px; }
+
+.note .title { text-align: right; margin: 10px 0;}
+.note .noteinfo { text-align: right; color: #999; font-size: 14px; }
+
+.note .noteinfo .userpic { display: inline-block; height: 40px; margin-right: 5px; }
+.note .noteinfo .userpic img {
+	vertical-align: middle;
+	height: 100%;
+	-webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+}
+.note .noteinfo p { margin-top: 10px; }
+
+.note .note_content {
+	line-height: 30px; font-size: 14px; color: #444; margin: 20px 0;
+	padding: 30px 40px; 
+	background-color: #FFF;
+	-webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+/***********Note Nav*************/
+.note_nav { margin: 20px 0; }
+.note_nav .func a { color: #4d8775; }
+.note_nav .func span.done { color: #999; }
+
+/******************************
+ *        Comment Show         *
+ ******************************/
+.comment {
+	padding: 20px 30px; background-color: #FFF; 
+	-webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.commentitem { line-height: 22px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dotted #E6E6E6; }
+.commentpic { width: 50px; float: left; }
+.commentpic img { width: 100%; }
+.commentcnt { min-height: 50px; margin-left: 60px; font-size: 12px; }
+.commentcnt span { font-family: Tahoma, 宋体; color: #333; }
+.commentcnt p { font-size: 12px; color: #999; }
+
+.commentbox { padding: 8px 8px 4px; background-color: #FFF; border: 1px solid #C6C6C6; border-radius: 3px; }
+.commentbox .commentinput {
+	/*background: transparent;*/
+	width: 100%; height: 72px; line-height: 18px; font-size: 12px; color: #777;
+	overflow: hidden; border: 0; outline: none; resize: none;
+}
+.commentsend { margin-top: 5px; }
+.commentsend a {
+	line-height: 24px; padding: 3px 15px; background-color: #83d500;
+	border: 1px solid #4ec000; border-radius: 3px; font-size: 12px; color: #FFF;
+}
+.commentsend a:hover { background-color: #9fe028; text-decoration: none; }
+

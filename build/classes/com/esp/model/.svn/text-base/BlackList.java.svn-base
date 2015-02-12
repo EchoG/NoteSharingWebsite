@@ -1,0 +1,31 @@
+/**
+ * 
+ */
+package com.esp.model;
+
+/**
+ * @author Echo
+ *
+ */
+public class BlackList {
+	
+	String person_id 		= "unamed";
+	String black_person_id	= null;
+	
+	
+	public String getPerson_id() {
+		return person_id;
+	}
+	public void setPerson_id(String person_id) {
+		this.person_id = person_id;
+	}
+	public String getBlack_person_id() {
+		return black_person_id;
+	}
+	public void setBlack_person_id(String black_person_id) {
+		this.black_person_id = black_person_id;
+	}
+	
+	
+	
+}
